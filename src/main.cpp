@@ -12,7 +12,7 @@ enum estados {
 #define sCarroVerde       11
 #define sPedestreVerde    10
 #define sPedestreVermelho 9
-#define botao             7
+#define botao             7   //se voce estiver usando arduino UNO, mudar para 3
 
 #define TEMPO_VERMELHO 5000
 #define TEMPO_AMARELO  2000
