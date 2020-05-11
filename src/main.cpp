@@ -21,6 +21,7 @@ enum estados {
 int estadoAtual;
 int proximoEstado;
 unsigned long esperaAte = 0;
+unsigned long piscaAmarelo;
 
 volatile bool botaoPedestrePressionado = false;
 
@@ -51,7 +52,7 @@ void setup() {
   Serial.println("\nReady!");
 }
 
-void ascende(enum estados COR) {
+void acende(enum estados COR) {
   digitalWrite(sCarroVermelho    , LOW);
   digitalWrite(sCarroAmarelo     , LOW);
   digitalWrite(sCarroVerde       , LOW);
@@ -78,7 +79,7 @@ void ascende(enum estados COR) {
   }
 }
 
-unsigned long piscaAmarelo;
+
 
 void loop() {  
   if (millis() > esperaAte ) {
@@ -86,26 +87,26 @@ void loop() {
     Serial.println(botaoPedestrePressionado);        
     switch (estadoAtual) {
       case SINAL_VERMELHOCURTO:
-        ascende(SINAL_VERMELHOCURTO);
+        acende(SINAL_VERMELHOCURTO);
         esperaAte = millis() + TEMPO_VERMELHO;
         estadoAtual = SINAL_VERDE;
         Serial.println("Estou no vermelho curto");
         break;
       case SINAL_VERMELHOLONGO:
-        ascende(SINAL_VERMELHOLONGO);
+        acende(SINAL_VERMELHOLONGO);
         esperaAte = millis() + TEMPO_VERMELHO*2;
         estadoAtual = SINAL_VERDE;
         Serial.println("Estou no vermelho longo");
         botaoPedestrePressionado = false;
         break;
       case SINAL_AMARELO:
-        ascende(SINAL_AMARELO);
+        acende(SINAL_AMARELO);
         esperaAte = millis() + TEMPO_AMARELO;                
         estadoAtual = !botaoPedestrePressionado ? SINAL_VERMELHOCURTO: SINAL_VERMELHOLONGO;
         Serial.println("Estou no amarelo");
         break;
       case SINAL_VERDE:
-        ascende(SINAL_VERDE);
+        acende(SINAL_VERDE);
         esperaAte = millis() + TEMPO_VERDE;
         estadoAtual = SINAL_AMARELO;
         Serial.println("Estou no verde");
