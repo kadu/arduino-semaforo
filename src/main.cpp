@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include "OneButton.h"
 
 enum estados {
   SINAL_VERMELHOCURTO = 1,
@@ -15,8 +16,8 @@ enum estados {
 #define botao             7   //se voce estiver usando arduino UNO, mudar para 3
 
 #define TEMPO_VERMELHO 5000
-#define TEMPO_AMARELO  2000
-#define TEMPO_VERDE    3000
+#define TEMPO_AMARELO  3000
+#define TEMPO_VERDE    2000
 
 int estadoAtual;
 int proximoEstado;
@@ -24,10 +25,14 @@ unsigned long esperaAte = 0;
 unsigned long piscaAmarelo;
 
 volatile bool botaoPedestrePressionado = false;
+OneButton button(botao, true);
 
 void pedestreChamando() {  
-  botaoPedestrePressionado = true;  
+  botaoPedestrePressionado = true;
+  Serial.println("pedestreChamando");
 }
+
+
 
 void setup() {
   pinMode(sCarroVermelho, OUTPUT);
@@ -35,8 +40,8 @@ void setup() {
   pinMode(sCarroVerde, OUTPUT);
   pinMode(sPedestreVermelho, OUTPUT);
   pinMode(sPedestreVerde, OUTPUT);  
-  pinMode(botao, INPUT_PULLUP);
-  attachInterrupt(digitalPinToInterrupt(botao), pedestreChamando, RISING);
+  // pinMode(botao, INPUT_PULLUP);
+  // attachInterrupt(digitalPinToInterrupt(botao), pedestreChamando, RISING);
   
 
   Serial.begin(115200);
@@ -48,7 +53,9 @@ void setup() {
   }
   
   botaoPedestrePressionado = false;
-  estadoAtual = SINAL_VERMELHOCURTO;  
+  estadoAtual = SINAL_VERMELHOCURTO;
+  button.attachClick(pedestreChamando);
+
   Serial.println("\nReady!");
 }
 
@@ -79,12 +86,11 @@ void acende(enum estados COR) {
   }
 }
 
-
-
-void loop() {  
+void loop() {
+  button.tick();
   if (millis() > esperaAte ) {
     Serial.print("Debug: ");
-    Serial.println(botaoPedestrePressionado);        
+    Serial.println(botaoPedestrePressionado);
     switch (estadoAtual) {
       case SINAL_VERMELHOCURTO:
         acende(SINAL_VERMELHOCURTO);
@@ -114,12 +120,13 @@ void loop() {
     }
   }
 
-  if(estadoAtual == SINAL_VERDE) {
-    if(millis() > (esperaAte - TEMPO_AMARELO)) {      
-      digitalWrite(sPedestreVermelho, HIGH);
-      delay(500);
-      digitalWrite(sPedestreVermelho, LOW);
-      delay(500);      
-    }
-  }
+  // if(estadoAtual == SINAL_VERDE) {
+  //   if(millis() > (esperaAte - TEMPO_AMARELO)) {
+  //     digitalWrite(sPedestreVermelho, HIGH);
+  //     delay(500);
+  //     digitalWrite(sPedestreVermelho, LOW);
+  //     delay(500);
+  //   }
+  // }
+
 }
